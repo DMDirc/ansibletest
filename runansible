@@ -1,0 +1,22 @@
+#!/bin/bash
+if [ ! -d /opt/ansible/ ]; then
+	echo "/opt/ansible needs to be mounted"
+	exit 1
+fi
+if [ ! -f /opt/ansible/.vault-password ]; then
+	echo "/opt/ansible/.vault-password must exist"
+	exit 1
+fi
+if [ ! -f /opt/ansible/inventories/test ]; then
+        echo "/opt/ansible/inventories/test must exist"
+        exit 1
+fi
+if [ $# -eq 0 ]; then
+        ansible-playbook -i /opt/ansible/inventories/test /opt/ansible/all.yml --vault-password-file=/opt/ansible/.vault-password
+fi
+if [ $# -eq 1 ]; then
+        ansible-playbook -i /opt/ansible/inventories/test /opt/ansible/$1 --vault-password-file=/opt/ansible/.vault-password
+	if [ -f /opt/ansible/tests/$1 ]; then
+        	/opt/ansible/tests/$1
+	fi
+fi
